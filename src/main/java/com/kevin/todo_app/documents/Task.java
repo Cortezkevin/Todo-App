@@ -1,0 +1,19 @@
+package com.kevin.todo_app.documents;
+
+import lombok.*;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Task implements Element {
+    private final static String ELEMENT_TYPE = "task";
+
+    private String description;
+    private boolean completed = false;
+
+    @Override
+    public String getType() {
+        return ELEMENT_TYPE;
+    }
+}
