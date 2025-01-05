@@ -3,6 +3,7 @@ package com.kevin.todo_app.handler;
 import com.kevin.todo_app.dto.note.CreateNoteDTO;
 import com.kevin.todo_app.dto.note.DetailedNoteDTO;
 import com.kevin.todo_app.dto.note.MinimalNoteDTO;
+import com.kevin.todo_app.dto.note.UpdateNoteDTO;
 import com.kevin.todo_app.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -46,5 +47,14 @@ public class NoteHandler {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .body(noteService.create(createNoteDTO), DetailedNoteDTO.class)
                 );
+    }
+
+    public Mono<ServerResponse> update(ServerRequest request){
+        Mono<UpdateNoteDTO> updateNoteDTOMono = request.bodyToMono(UpdateNoteDTO.class);
+        return updateNoteDTOMono.flatMap(updateNoteDTO ->
+                ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(noteService.update(updateNoteDTO), DetailedNoteDTO.class)
+        );
     }
 }

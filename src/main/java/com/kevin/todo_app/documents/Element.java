@@ -21,4 +21,7 @@ public interface Element {
     *  jackson usará este getType para comparar la propiedad que se pasara en el json
      * */
     String getType();
+    Integer getIndex();
+    void setIndex(Integer index);
+    Boolean isDelete();
 }

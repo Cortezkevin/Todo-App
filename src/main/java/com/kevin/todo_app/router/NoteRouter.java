@@ -18,6 +18,7 @@ public class NoteRouter {
                 .GET(PATH, handler::findAll)
                 .GET(PATH + "/{id}", handler::findById)
                 .POST(PATH, handler::create)
+                .PUT(PATH, handler::update)
                 .build();
     }
 
