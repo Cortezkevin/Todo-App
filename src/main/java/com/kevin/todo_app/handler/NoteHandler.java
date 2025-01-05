@@ -8,11 +8,13 @@ import com.kevin.todo_app.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -21,14 +23,22 @@ public class NoteHandler {
     private final NoteService noteService;
 
     public Mono<ServerResponse> findAll(ServerRequest request){
-        return noteService.findAll()
-                .collectList()
-                .flatMap( minimalNoteDTOS ->
-                        minimalNoteDTOS.isEmpty()
-                        ? ServerResponse.noContent().build()
-                        : ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                                .body(minimalNoteDTOS, MinimalNoteDTO.class)
-                );
+        MultiValueMap<String, String> params = request.queryParams();
+        int page = Integer.parseInt(Objects.requireNonNull(params.getFirst("page")));
+        int size = Integer.parseInt(Objects.requireNonNull(params.getFirst("size")));
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.findAll(page, size), MinimalNoteDTO.class);
+    }
+
+    public Mono<ServerResponse> search(ServerRequest request){
+        MultiValueMap<String, String> params = request.queryParams();
+        int page = Integer.parseInt(Objects.requireNonNull(params.getFirst("page")));
+        int size = Integer.parseInt(Objects.requireNonNull(params.getFirst("size")));
+        String title = Objects.requireNonNull(params.getFirst("title"));
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.search(page, size, title), MinimalNoteDTO.class);
     }
 
     public Mono<ServerResponse> findById(ServerRequest request){

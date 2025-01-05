@@ -16,7 +16,8 @@ public class NoteRouter {
     public RouterFunction<ServerResponse> noteRoute(NoteHandler handler){
         return RouterFunctions.route()
                 .GET(PATH, handler::findAll)
-                .GET(PATH + "/{id}", handler::findById)
+                .GET(PATH + "/find/{id}", handler::findById)
+                .GET(PATH + "/search", handler::search)
                 .POST(PATH, handler::create)
                 .PUT(PATH, handler::update)
                 .build();

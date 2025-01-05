@@ -8,10 +8,12 @@ import com.kevin.todo_app.dto.note.MinimalNoteDTO;
 import com.kevin.todo_app.dto.note.UpdateNoteDTO;
 import com.kevin.todo_app.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,21 +31,13 @@ public class NoteService {
     private final ReactiveMongoTemplate mongoTemplate;
 
     public Flux<MinimalNoteDTO> findAll(int page, int size){
-        // Crea un Pageable con el número de página y tamaño
         Pageable pageable = PageRequest.of(page, size);
 
-        // Crea la consulta utilizando el Pageable
-        Query query = new Query().with(pageable).with(Sort.by(Sort.Direction.ASC, "title"));
+        Query query = new Query().with(pageable).with(Sort.by(Sort.Direction.ASC, "createdAt"));
 
-        // Realiza la consulta reactiva
         return mongoTemplate.find(query, Note.class)
-                .map(MinimalNoteDTO::toDTO);  // Mapear a DTO
+                .map(MinimalNoteDTO::toDTO);
     }
-
-//    public Flux<MinimalNoteDTO> findAll(){
-//        return noteRepository.findAll()
-//                .map(MinimalNoteDTO::toDTO);
-//    }
 
     public Mono<DetailedNoteDTO> findById(String id){
         return noteRepository.findById(id)
@@ -51,8 +45,15 @@ public class NoteService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
-    public Mono<MinimalNoteDTO> search(){
+    public Flux<MinimalNoteDTO> search(int page, int size, String title) {
+        Pageable pageable = PageRequest.of(page, size);
 
+        Query query = new Query();
+        query.with(pageable).with(Sort.by(Sort.Direction.ASC, "createdAt"));
+        query.addCriteria(Criteria.where("title").regex(title, "i"));
+
+        return mongoTemplate.find(query, Note.class)
+                .map(note -> new MinimalNoteDTO(note.getId(), note.getTitle()));
     }
 
     public Mono<DetailedNoteDTO> create(CreateNoteDTO createNoteDTO){
