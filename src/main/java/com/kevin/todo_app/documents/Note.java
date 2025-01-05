@@ -1,9 +1,11 @@
 package com.kevin.todo_app.documents;
+import com.kevin.todo_app.enums.Color;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -15,7 +17,9 @@ public class Note {
     @Id
     private String id;
     private String title;
-    private List<Element> content;
+    private Color color = Color.DEFAULT;
+    private List<Element> content = new ArrayList<>();
+    private List<String> tags = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

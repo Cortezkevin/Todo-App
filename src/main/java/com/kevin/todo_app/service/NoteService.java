@@ -8,6 +8,11 @@ import com.kevin.todo_app.dto.note.MinimalNoteDTO;
 import com.kevin.todo_app.dto.note.UpdateNoteDTO;
 import com.kevin.todo_app.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,16 +26,33 @@ import java.util.stream.Collectors;
 public class NoteService {
 
     private final NoteRepository noteRepository;
+    private final ReactiveMongoTemplate mongoTemplate;
 
-    public Flux<MinimalNoteDTO> findAll(){
-        return noteRepository.findAll()
-                .map(MinimalNoteDTO::toDTO);
+    public Flux<MinimalNoteDTO> findAll(int page, int size){
+        // Crea un Pageable con el número de página y tamaño
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Crea la consulta utilizando el Pageable
+        Query query = new Query().with(pageable).with(Sort.by(Sort.Direction.ASC, "title"));
+
+        // Realiza la consulta reactiva
+        return mongoTemplate.find(query, Note.class)
+                .map(MinimalNoteDTO::toDTO);  // Mapear a DTO
     }
+
+//    public Flux<MinimalNoteDTO> findAll(){
+//        return noteRepository.findAll()
+//                .map(MinimalNoteDTO::toDTO);
+//    }
 
     public Mono<DetailedNoteDTO> findById(String id){
         return noteRepository.findById(id)
                 .map(DetailedNoteDTO::toDTO)
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+    }
+
+    public Mono<MinimalNoteDTO> search(){
+
     }
 
     public Mono<DetailedNoteDTO> create(CreateNoteDTO createNoteDTO){
@@ -41,6 +63,7 @@ public class NoteService {
                                 .title(createNoteDTO.title())
                                 .content(createNoteDTO.content())
                                 .createdAt(LocalDateTime.now())
+                                .color(createNoteDTO.color())
                                 .build()
                 )).map(note -> DetailedNoteDTO.toDTO((Note) note));
     }
@@ -91,10 +114,20 @@ public class NoteService {
                             note.setTitle(updateNoteDTO.title());
                             note.setUpdatedAt(LocalDateTime.now());
                             note.setContent(updatedElements);
+                            note.setColor(updateNoteDTO.color());
                             return noteRepository.save(note);
                         })
                 )
                 .map(DetailedNoteDTO::toDTO)
+                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+    }
+
+    public Mono<DetailedNoteDTO> deleteById(String id){
+        return noteRepository.findById(id)
+                .flatMap(note ->
+                    noteRepository.deleteById(id)
+                        .then(Mono.just(note))
+                ).map(DetailedNoteDTO::toDTO)
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 }
