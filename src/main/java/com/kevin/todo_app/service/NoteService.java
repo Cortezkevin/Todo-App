@@ -55,7 +55,7 @@ public class NoteService {
         query.addCriteria(Criteria.where("title").regex(title, "i"));
 
         return mongoTemplate.find(query, Note.class)
-                .map(note -> new MinimalNoteDTO(note.getId(), note.getTitle()));
+                .map(MinimalNoteDTO::toDTO);
     }
 
     public Mono<DetailedNoteDTO> create(CreateNoteDTO createNoteDTO){

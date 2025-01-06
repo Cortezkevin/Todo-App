@@ -6,6 +6,7 @@ import com.kevin.todo_app.dto.tag.CreateTagDTO;
 import com.kevin.todo_app.dto.tag.TagDTO;
 import com.kevin.todo_app.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TagService {
@@ -35,22 +37,30 @@ public class TagService {
     }
 
     public Flux<TagDTO> findAllOrCreateByName(List<String> nameList){
+        log.info("nameList -> {}", nameList);
         return tagRepository.findAllByName(nameList)
                 .collectList()
                 .flatMapMany(existingTags -> {
-                    Set<String> existingNames = existingTags.stream()
+                    List<String> existingNames = existingTags.stream()
                             .map(Tag::getName)
-                            .collect(Collectors.toSet());
+                            .toList();
+
+                    log.info("existingTags -> {}", existingNames);
 
                     List<String> notFoundNames = nameList.stream()
                             .filter(name -> !existingNames.contains(name))
                             .toList();
+
+                    log.info("notFoundNames -> {}", notFoundNames);
+
 
                     Flux<Tag> newTags = tagRepository.saveAll(
                             notFoundNames.stream()
                                     .map(newName -> Tag.builder().name(newName).build())
                                     .collect(Collectors.toList())
                     );
+
+                    log.info("newTags -> {}", newTags);
 
                     return Flux.concat(
                             Flux.fromIterable(existingTags),
