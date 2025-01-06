@@ -9,6 +9,7 @@ public record UpdateNoteDTO(
         String id,
         String title,
         List<Element> content,
+        List<String> tags,
         Color color
 ) {
 }

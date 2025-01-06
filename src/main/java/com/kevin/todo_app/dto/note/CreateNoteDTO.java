@@ -8,6 +8,7 @@ import java.util.List;
 public record CreateNoteDTO(
         String title,
         List<Element> content,
+        List<String> tags,
         Color color
 ) {
 }

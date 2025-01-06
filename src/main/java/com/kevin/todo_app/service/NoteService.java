@@ -6,6 +6,7 @@ import com.kevin.todo_app.dto.note.CreateNoteDTO;
 import com.kevin.todo_app.dto.note.DetailedNoteDTO;
 import com.kevin.todo_app.dto.note.MinimalNoteDTO;
 import com.kevin.todo_app.dto.note.UpdateNoteDTO;
+import com.kevin.todo_app.dto.tag.TagDTO;
 import com.kevin.todo_app.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class NoteService {
 
     private final NoteRepository noteRepository;
+    private final TagService tagService;
     private final ReactiveMongoTemplate mongoTemplate;
 
     public Flux<MinimalNoteDTO> findAll(int page, int size){
@@ -59,14 +61,20 @@ public class NoteService {
     public Mono<DetailedNoteDTO> create(CreateNoteDTO createNoteDTO){
         return noteRepository.findByTitle(createNoteDTO.title())
                 .flatMap(note -> Mono.error(new RuntimeException("Note already exists with this title.")))
-                .switchIfEmpty(noteRepository.save(
-                        Note.builder()
-                                .title(createNoteDTO.title())
-                                .content(createNoteDTO.content())
-                                .createdAt(LocalDateTime.now())
-                                .color(createNoteDTO.color())
-                                .build()
-                )).map(note -> DetailedNoteDTO.toDTO((Note) note));
+                .switchIfEmpty(
+                    tagService.findAllOrCreateByName(createNoteDTO.tags()).collectList()
+                        .flatMap(tags ->
+                            noteRepository.save(
+                                Note.builder()
+                                    .title(createNoteDTO.title())
+                                    .content(createNoteDTO.content())
+                                    .createdAt(LocalDateTime.now())
+                                    .color(createNoteDTO.color())
+                                    .tags(tags.stream().map(TagDTO::name).toList())
+                                    .build()
+                            )
+                        )
+                ).map(note -> DetailedNoteDTO.toDTO((Note) note));
     }
 
     public Mono<DetailedNoteDTO> update(UpdateNoteDTO updateNoteDTO){
@@ -116,7 +124,13 @@ public class NoteService {
                             note.setUpdatedAt(LocalDateTime.now());
                             note.setContent(updatedElements);
                             note.setColor(updateNoteDTO.color());
-                            return noteRepository.save(note);
+
+                            return tagService.findAllOrCreateByName(updateNoteDTO.tags())
+                                    .collectList()
+                                    .flatMap(updatedTags -> {
+                                        note.setTags(updatedTags.stream().map(TagDTO::name).toList());
+                                        return noteRepository.save(note);
+                                    });
                         })
                 )
                 .map(DetailedNoteDTO::toDTO)
