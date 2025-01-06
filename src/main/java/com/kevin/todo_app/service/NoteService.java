@@ -47,12 +47,18 @@ public class NoteService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
-    public Flux<MinimalNoteDTO> search(int page, int size, String title) {
+    public Flux<MinimalNoteDTO> search(int page, int size, String title, List<String> tags) {
         Pageable pageable = PageRequest.of(page, size);
 
         Query query = new Query();
         query.with(pageable).with(Sort.by(Sort.Direction.ASC, "createdAt"));
-        query.addCriteria(Criteria.where("title").regex(title, "i"));
+
+        if( title != null){
+            query.addCriteria(Criteria.where("title").regex(title, "i"));
+        }
+        if (tags != null && !tags.isEmpty()) {
+            query.addCriteria(Criteria.where("tags").in(tags));
+        }
 
         return mongoTemplate.find(query, Note.class)
                 .map(MinimalNoteDTO::toDTO);

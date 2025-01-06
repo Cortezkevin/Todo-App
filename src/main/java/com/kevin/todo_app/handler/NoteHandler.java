@@ -6,6 +6,7 @@ import com.kevin.todo_app.dto.note.MinimalNoteDTO;
 import com.kevin.todo_app.dto.note.UpdateNoteDTO;
 import com.kevin.todo_app.service.NoteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
@@ -14,8 +15,10 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class NoteHandler {
@@ -33,12 +36,14 @@ public class NoteHandler {
 
     public Mono<ServerResponse> search(ServerRequest request){
         MultiValueMap<String, String> params = request.queryParams();
-        int page = Integer.parseInt(Objects.requireNonNull(params.getFirst("page")));
-        int size = Integer.parseInt(Objects.requireNonNull(params.getFirst("size")));
-        String title = Objects.requireNonNull(params.getFirst("title"));
+        int page = params.getFirst("page") == null ? 1 : Integer.parseInt(params.getFirst("page"));
+        int size = params.getFirst("page") == null ? 5 : Integer.parseInt(params.getFirst("size"));
+        String title = params.getFirst("title");
+        List<String> tags = params.get("tags");
+        log.info("TAGS QUERY -> {}", tags);
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(noteService.search(page, size, title), MinimalNoteDTO.class);
+                .body(noteService.search(page, size, title, tags), MinimalNoteDTO.class);
     }
 
     public Mono<ServerResponse> findById(ServerRequest request){
