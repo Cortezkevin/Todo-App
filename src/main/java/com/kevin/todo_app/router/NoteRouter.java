@@ -24,6 +24,8 @@ public class NoteRouter {
                 .PUT(PATH, handler::update)
                 .PUT(PATH + "/logical/one/{id}", handler::logicalDeleteById)
                 .PUT(PATH + "/logical/many", handler::logicalDeleteByIds)
+                .PUT(PATH + "/restore/one/{id}", handler::restoreById)
+                .PUT(PATH + "/restore/many", handler::restoreByIds)
                 .DELETE(PATH + "/physical/one/{id}", handler::physicalDeleteById)
                 .DELETE(PATH + "/physical/many", handler::physicalDeleteByIds)
                 .build();

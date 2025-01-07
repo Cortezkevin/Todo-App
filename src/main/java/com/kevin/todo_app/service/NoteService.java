@@ -168,18 +168,36 @@ public class NoteService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
+    public Mono<DetailedNoteDTO> restoreById(String id){
+        return noteRepository.findById(id)
+                .flatMap(note -> {
+                    note.setDeleted(false);
+                    note.setDeletedAt(null);
+                    return noteRepository.save(note);
+                }).map(DetailedNoteDTO::toDTO)
+                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+    }
+
+    public Flux<DetailedNoteDTO> restoreByIds(List<String> ids){
+        return noteRepository.findAllById(ids)
+                .map(note -> {
+                    note.setDeleted(false);
+                    note.setDeletedAt(null);
+                    return note;
+                })
+                .collectList()
+                .flatMapMany(noteRepository::saveAll)
+                .map(DetailedNoteDTO::toDTO);
+    }
+
     public Flux<DetailedNoteDTO> logicalDeleteByIds(List<String> ids){
         return noteRepository.findAllById(ids)
                 .map(note -> {
                     note.setDeleted(true);
                     note.setDeletedAt(LocalDateTime.now());
-                    log.info("Note {}", note);
                     return note;
                 })
                 .collectList()
-                .doOnNext(notes -> {
-                    log.info("Notes {}", notes);
-                })
                 .flatMapMany(noteRepository::saveAll)
                 .map(DetailedNoteDTO::toDTO);
     }

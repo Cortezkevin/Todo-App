@@ -114,4 +114,18 @@ public class NoteHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(noteService.physicalDeleteById(id), String.class);
     }
+
+    public Mono<ServerResponse> restoreById(ServerRequest request){
+        String id = request.pathVariable("id");
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.restoreById(id), DetailedNoteDTO.class);
+    }
+
+    public Mono<ServerResponse> restoreByIds(ServerRequest request){
+        List<String> ids = Arrays.asList(request.queryParams().getFirst("ids").split(","));
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.restoreByIds(ids), DetailedNoteDTO.class);
+    }
 }
