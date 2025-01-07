@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,12 +35,23 @@ public class NoteHandler {
                 .body(noteService.findAll(page - 1, size), MinimalNoteDTO.class);
     }
 
+    public Mono<ServerResponse> findAllDeleted(ServerRequest request){
+        MultiValueMap<String, String> params = request.queryParams();
+        int page = params.getFirst("page") == null ? 1 : Integer.parseInt(params.getFirst("page"));
+        int size = params.getFirst("size") == null ? 5 : Integer.parseInt(params.getFirst("size"));
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.findAllDeleted(page - 1, size), MinimalNoteDTO.class);
+    }
+
     public Mono<ServerResponse> search(ServerRequest request){
         MultiValueMap<String, String> params = request.queryParams();
         int page = params.getFirst("page") == null ? 1 : Integer.parseInt(params.getFirst("page"));
         int size = params.getFirst("size") == null ? 5 : Integer.parseInt(params.getFirst("size"));
         String title = params.getFirst("title");
-        List<String> tags = params.get("tags");
+
+        String tagsParam = params.getFirst("tags");
+        List<String> tags = tagsParam != null ? Arrays.asList(tagsParam.split(",")) : new ArrayList<>();
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(noteService.search(page - 1, size, title, tags), MinimalNoteDTO.class);

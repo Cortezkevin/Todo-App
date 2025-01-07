@@ -41,9 +41,9 @@ public class NoteService {
         Query query = new Query().with(pageable);
         query.addCriteria(Criteria.where("deleted").is(false));
         query.with(
-                Sort.by(Sort.Order.desc("fixed"))  // Primero las fijadas
-                        .and(Sort.by(Sort.Order.desc("fixedAt"))) // Si está fijada, se ordena por 'fixedAt' (más reciente primero)
-                        .and(Sort.by(Sort.Order.desc("createdAt")))  // Las no fijadas se ordenan por 'createdAt' (más antigua primero)
+                Sort.by(Sort.Order.desc("fixed"))
+                        .and(Sort.by(Sort.Order.desc("fixedAt")))
+                        .and(Sort.by(Sort.Order.desc("createdAt")))
         );
 
         return mongoTemplate.find(query, Note.class)
@@ -213,5 +213,16 @@ public class NoteService {
                 })
                 .then(Mono.just("Nota eliminada totalmente."))
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+    }
+
+    public Flux<MinimalNoteDTO> findAllDeleted(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Query query = new Query().with(pageable);
+        query.addCriteria(Criteria.where("deleted").is(true));
+        query.with(Sort.by(Sort.Order.desc("createdAt")));
+
+        return mongoTemplate.find(query, Note.class)
+                .map(MinimalNoteDTO::toDTO);
     }
 }
