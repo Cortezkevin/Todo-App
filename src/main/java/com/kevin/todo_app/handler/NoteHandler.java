@@ -16,7 +16,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -27,32 +26,35 @@ public class NoteHandler {
 
     public Mono<ServerResponse> findAll(ServerRequest request){
         MultiValueMap<String, String> params = request.queryParams();
-        int page = Integer.parseInt(Objects.requireNonNull(params.getFirst("page")));
-        int size = Integer.parseInt(Objects.requireNonNull(params.getFirst("size")));
+        int page = params.getFirst("page") == null ? 1 : Integer.parseInt(params.getFirst("page"));
+        int size = params.getFirst("size") == null ? 5 : Integer.parseInt(params.getFirst("size"));
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(noteService.findAll(page, size), MinimalNoteDTO.class);
+                .body(noteService.findAll(page - 1, size), MinimalNoteDTO.class);
     }
 
     public Mono<ServerResponse> search(ServerRequest request){
         MultiValueMap<String, String> params = request.queryParams();
         int page = params.getFirst("page") == null ? 1 : Integer.parseInt(params.getFirst("page"));
-        int size = params.getFirst("page") == null ? 5 : Integer.parseInt(params.getFirst("size"));
+        int size = params.getFirst("size") == null ? 5 : Integer.parseInt(params.getFirst("size"));
         String title = params.getFirst("title");
         List<String> tags = params.get("tags");
         log.info("TAGS QUERY -> {}", tags);
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(noteService.search(page, size, title, tags), MinimalNoteDTO.class);
+                .body(noteService.search(page - 1, size, title, tags), MinimalNoteDTO.class);
+    }
+
+    public Mono<ServerResponse> toggleFixNote(ServerRequest request){
+        String id = request.pathVariable("id");
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.toggleFixNote(id), DetailedNoteDTO.class);
     }
 
     public Mono<ServerResponse> findById(ServerRequest request){
         String id = request.pathVariable("id");
-        return noteService.findById(id)
-                .flatMap( detailedNoteDTO ->
-                        ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                                .body(detailedNoteDTO, DetailedNoteDTO.class)
-                );
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.findById(id), DetailedNoteDTO.class);
     }
 
     public Mono<ServerResponse> create(ServerRequest request){

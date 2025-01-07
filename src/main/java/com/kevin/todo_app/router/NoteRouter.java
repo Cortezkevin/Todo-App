@@ -18,6 +18,7 @@ public class NoteRouter {
                 .GET(PATH, handler::findAll)
                 .GET(PATH + "/find/{id}", handler::findById)
                 .GET(PATH + "/search", handler::search)
+                .GET(PATH + "/toggleFix/{id}", handler::toggleFixNote)
                 .POST(PATH, handler::create)
                 .PUT(PATH, handler::update)
                 .build();

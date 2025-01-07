@@ -9,9 +9,10 @@ public record MinimalNoteDTO(
         String id,
         String title,
         Color color,
-        List<String> tags
+        List<String> tags,
+        boolean fixed
 ) {
     public static MinimalNoteDTO toDTO(Note note){
-        return new MinimalNoteDTO(note.getId(), note.getTitle(), note.getColor(), note.getTags());
+        return new MinimalNoteDTO(note.getId(), note.getTitle(), note.getColor(), note.getTags(),note.isFixed());
     }
 }

@@ -35,7 +35,12 @@ public class NoteService {
     public Flux<MinimalNoteDTO> findAll(int page, int size){
         Pageable pageable = PageRequest.of(page, size);
 
-        Query query = new Query().with(pageable).with(Sort.by(Sort.Direction.ASC, "createdAt"));
+        Query query = new Query().with(pageable);
+        query.with(
+                Sort.by(Sort.Order.desc("fixed"))  // Primero las fijadas
+                        .and(Sort.by(Sort.Order.desc("fixedAt"))) // Si está fijada, se ordena por 'fixedAt' (más reciente primero)
+                        .and(Sort.by(Sort.Order.desc("createdAt")))  // Las no fijadas se ordenan por 'createdAt' (más antigua primero)
+        );
 
         return mongoTemplate.find(query, Note.class)
                 .map(MinimalNoteDTO::toDTO);
@@ -62,6 +67,21 @@ public class NoteService {
 
         return mongoTemplate.find(query, Note.class)
                 .map(MinimalNoteDTO::toDTO);
+    }
+
+    public Mono<DetailedNoteDTO> toggleFixNote(String id){
+        return noteRepository.findById(id)
+                .flatMap(note -> {
+                    if(note.isFixed()){
+                        note.setFixed(false);
+                        note.setFixedAt(null);
+                    }else {
+                        note.setFixed(true);
+                        note.setFixedAt(LocalDateTime.now());
+                    }
+                    return noteRepository.save(note);
+                }).map(DetailedNoteDTO::toDTO)
+                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
     public Mono<DetailedNoteDTO> create(CreateNoteDTO createNoteDTO){

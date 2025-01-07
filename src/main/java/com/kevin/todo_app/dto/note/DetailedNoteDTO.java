@@ -11,9 +11,10 @@ public record DetailedNoteDTO(
     String title,
     List<Element> content,
     Color color,
-    List<String> tags
+    List<String> tags,
+    boolean fixed
 ) {
     public static DetailedNoteDTO toDTO(Note note){
-        return new DetailedNoteDTO(note.getId(), note.getTitle(), note.getContent(), note.getColor(), note.getTags());
+        return new DetailedNoteDTO(note.getId(), note.getTitle(), note.getContent(), note.getColor(), note.getTags(), note.isFixed());
     }
 }

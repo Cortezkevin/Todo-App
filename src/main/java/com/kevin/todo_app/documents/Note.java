@@ -17,6 +17,8 @@ public class Note {
     @Id
     private String id;
     private String title;
+    private boolean fixed = false;
+    private LocalDateTime fixedAt;
     private Color color = Color.DEFAULT;
     private List<Element> content = new ArrayList<>();
     private List<String> tags = new ArrayList<>();
