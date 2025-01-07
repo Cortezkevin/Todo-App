@@ -39,6 +39,7 @@ public class NoteService {
         Pageable pageable = PageRequest.of(page, size);
 
         Query query = new Query().with(pageable);
+        query.addCriteria(Criteria.where("deleted").is(false));
         query.with(
                 Sort.by(Sort.Order.desc("fixed"))  // Primero las fijadas
                         .and(Sort.by(Sort.Order.desc("fixedAt"))) // Si está fijada, se ordena por 'fixedAt' (más reciente primero)
@@ -60,6 +61,7 @@ public class NoteService {
 
         Query query = new Query();
         query.with(pageable).with(Sort.by(Sort.Direction.ASC, "createdAt"));
+        query.addCriteria(Criteria.where("deleted").is(false));
 
         if( title != null){
             query.addCriteria(Criteria.where("title").regex(title, "i"));
