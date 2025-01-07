@@ -39,7 +39,6 @@ public class NoteHandler {
         int size = params.getFirst("size") == null ? 5 : Integer.parseInt(params.getFirst("size"));
         String title = params.getFirst("title");
         List<String> tags = params.get("tags");
-        log.info("TAGS QUERY -> {}", tags);
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(noteService.search(page - 1, size, title, tags), MinimalNoteDTO.class);
@@ -60,9 +59,9 @@ public class NoteHandler {
     public Mono<ServerResponse> create(ServerRequest request){
         Mono<CreateNoteDTO> createNoteDTOMono = request.bodyToMono(CreateNoteDTO.class);
         return createNoteDTOMono.flatMap(createNoteDTO ->
-                        ServerResponse.created(URI.create("/api/note"))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(noteService.create(createNoteDTO), DetailedNoteDTO.class)
+                    ServerResponse.created(URI.create("/api/note"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(noteService.create(createNoteDTO), DetailedNoteDTO.class)
                 );
     }
 
@@ -70,8 +69,22 @@ public class NoteHandler {
         Mono<UpdateNoteDTO> updateNoteDTOMono = request.bodyToMono(UpdateNoteDTO.class);
         return updateNoteDTOMono.flatMap(updateNoteDTO ->
                 ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(noteService.update(updateNoteDTO), DetailedNoteDTO.class)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(noteService.update(updateNoteDTO), DetailedNoteDTO.class)
         );
+    }
+
+    public Mono<ServerResponse> deleteByIds(ServerRequest request){
+        List<String> ids = request.queryParams().get("ids");
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.deleteByIds(ids), DetailedNoteDTO.class);
+    }
+
+    public Mono<ServerResponse> deleteById(ServerRequest request){
+        String id = request.pathVariable("id");
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.deleteById(id), DetailedNoteDTO.class);
     }
 }

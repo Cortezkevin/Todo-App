@@ -9,6 +9,7 @@ import com.kevin.todo_app.dto.note.UpdateNoteDTO;
 import com.kevin.todo_app.dto.tag.TagDTO;
 import com.kevin.todo_app.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NoteService {
@@ -161,6 +163,12 @@ public class NoteService {
                 )
                 .map(DetailedNoteDTO::toDTO)
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+    }
+
+    public Flux<DetailedNoteDTO> deleteByIds(List<String> ids){
+        return noteRepository.findAllById(ids)
+                .flatMap(note -> noteRepository.deleteById(note.getId()).then(Mono.just(note)))
+                .map(DetailedNoteDTO::toDTO);
     }
 
     public Mono<DetailedNoteDTO> deleteById(String id){

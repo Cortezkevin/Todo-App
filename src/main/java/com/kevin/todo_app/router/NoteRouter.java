@@ -21,6 +21,8 @@ public class NoteRouter {
                 .GET(PATH + "/toggleFix/{id}", handler::toggleFixNote)
                 .POST(PATH, handler::create)
                 .PUT(PATH, handler::update)
+                .DELETE(PATH + "/one/{id}", handler::deleteById)
+                .DELETE(PATH + "/many", handler::deleteByIds)
                 .build();
     }
 
