@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -74,17 +75,31 @@ public class NoteHandler {
         );
     }
 
-    public Mono<ServerResponse> deleteByIds(ServerRequest request){
-        List<String> ids = request.queryParams().get("ids");
+    public Mono<ServerResponse> logicalDeleteByIds(ServerRequest request){
+        List<String> ids = Arrays.asList(request.queryParams().getFirst("ids").split(","));
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(noteService.deleteByIds(ids), DetailedNoteDTO.class);
+                .body(noteService.logicalDeleteByIds(ids), DetailedNoteDTO.class);
     }
 
-    public Mono<ServerResponse> deleteById(ServerRequest request){
+    public Mono<ServerResponse> logicalDeleteById(ServerRequest request){
         String id = request.pathVariable("id");
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(noteService.deleteById(id), DetailedNoteDTO.class);
+                .body(noteService.logicalDeleteById(id), DetailedNoteDTO.class);
+    }
+
+    public Mono<ServerResponse> physicalDeleteByIds(ServerRequest request){
+        List<String> ids = Arrays.asList(request.queryParams().getFirst("ids").split(","));
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.physicalDeleteByIds(ids), String.class);
+    }
+
+    public Mono<ServerResponse> physicalDeleteById(ServerRequest request){
+        String id = request.pathVariable("id");
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.physicalDeleteById(id), String.class);
     }
 }

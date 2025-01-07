@@ -10,6 +10,7 @@ import com.kevin.todo_app.dto.tag.TagDTO;
 import com.kevin.todo_app.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -165,18 +166,50 @@ public class NoteService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
-    public Flux<DetailedNoteDTO> deleteByIds(List<String> ids){
+    public Flux<DetailedNoteDTO> logicalDeleteByIds(List<String> ids){
         return noteRepository.findAllById(ids)
-                .flatMap(note -> noteRepository.deleteById(note.getId()).then(Mono.just(note)))
+                .map(note -> {
+                    note.setDeleted(true);
+                    note.setDeletedAt(LocalDateTime.now());
+                    log.info("Note {}", note);
+                    return note;
+                })
+                .collectList()
+                .doOnNext(notes -> {
+                    log.info("Notes {}", notes);
+                })
+                .flatMapMany(noteRepository::saveAll)
                 .map(DetailedNoteDTO::toDTO);
     }
 
-    public Mono<DetailedNoteDTO> deleteById(String id){
+    public Mono<DetailedNoteDTO> logicalDeleteById(String id){
         return noteRepository.findById(id)
-                .flatMap(note ->
-                    noteRepository.deleteById(id)
-                        .then(Mono.just(note))
-                ).map(DetailedNoteDTO::toDTO)
+                .flatMap(note -> {
+                    note.setDeleted(true);
+                    note.setDeletedAt(LocalDateTime.now());
+                    return noteRepository.save(note);
+                }).map(DetailedNoteDTO::toDTO)
+                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+    }
+
+    public Mono<String> physicalDeleteByIds(List<String> ids){
+        return noteRepository.findAllById(ids)
+                .filter(Note::isDeleted)
+                .collectList()
+                .flatMap(noteRepository::deleteAll)
+                .then(Mono.just("Notas eliminadas totalmente."));
+    }
+
+    public Mono<String> physicalDeleteById(String id){
+        return noteRepository.findById(id)
+                .flatMap(note -> {
+                    if( note.isDeleted() ){
+                        return noteRepository.deleteById(id);
+                    }else {
+                        return Mono.error(new RuntimeException("La nota debe estar en la papelera."));
+                    }
+                })
+                .then(Mono.just("Nota eliminada totalmente."))
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 }
