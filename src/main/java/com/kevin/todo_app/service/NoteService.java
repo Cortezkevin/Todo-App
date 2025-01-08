@@ -42,8 +42,8 @@ public class NoteService {
         query.addCriteria(Criteria.where("deleted").is(false));
         query.with(
                 Sort.by(Sort.Order.desc("fixed"))
-                        .and(Sort.by(Sort.Order.desc("fixedAt")))
-                        .and(Sort.by(Sort.Order.desc("createdAt")))
+                    .and(Sort.by(Sort.Order.desc("fixedAt")))
+                    .and(Sort.by(Sort.Order.desc("createdAt")))
         );
 
         return mongoTemplate.find(query, Note.class)
@@ -166,6 +166,26 @@ public class NoteService {
                 )
                 .map(DetailedNoteDTO::toDTO)
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+    }
+
+    public Mono<DetailedNoteDTO> toggleFavorite(String id){
+        return noteRepository.findById(id)
+                .flatMap(note -> {
+                    note.setFavorite(!note.isFavorite());
+                    return noteRepository.save(note);
+                }).map(DetailedNoteDTO::toDTO)
+                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+    }
+
+    public Flux<DetailedNoteDTO> toggleFavorite(List<String> ids){
+        return noteRepository.findAllById(ids)
+                .map(note -> {
+                    note.setFavorite(true);
+                    return note;
+                })
+                .collectList()
+                .flatMapMany(noteRepository::saveAll)
+                .map(DetailedNoteDTO::toDTO);
     }
 
     public Mono<DetailedNoteDTO> restoreById(String id){

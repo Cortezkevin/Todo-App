@@ -87,6 +87,20 @@ public class NoteHandler {
         );
     }
 
+    public Mono<ServerResponse> toggleFavoriteById(ServerRequest request){
+        String id = request.pathVariable("id");
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.toggleFavorite(id), DetailedNoteDTO.class);
+    }
+
+    public Mono<ServerResponse> toggleFavoriteByIds(ServerRequest request){
+        List<String> ids = Arrays.asList(request.queryParams().getFirst("ids").split(","));
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.toggleFavorite(ids), DetailedNoteDTO.class);
+    }
+
     public Mono<ServerResponse> logicalDeleteByIds(ServerRequest request){
         List<String> ids = Arrays.asList(request.queryParams().getFirst("ids").split(","));
         return ServerResponse.ok()

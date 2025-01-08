@@ -25,6 +25,8 @@ public class Note {
     private boolean deleted = false;
     private boolean fixed = false;
 
+    private boolean favorite = false;
+
     private LocalDateTime fixedAt;
     private LocalDateTime deletedAt;
     private LocalDateTime createdAt;
