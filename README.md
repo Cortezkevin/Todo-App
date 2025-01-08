@@ -1,18 +1,27 @@
 # Notas API REST
 
-Bienvenido al repositorio de la **API REST** para una **aplicación web de notas**. Esta API permite a los usuarios crear, leer, actualizar y eliminar notas de manera eficiente y sencilla.
+Bienvenido al repositorio de la **API REST** para una **aplicación web de notas**. Esta API permite a los usuarios gestionar sus notas de manera eficiente y sencilla.
 
 ## Descripción
 
-Esta API proporciona un conjunto de servicios RESTful que permiten interactuar con una base de datos de notas. Los usuarios pueden gestionar sus notas de manera intuitiva, almacenándolas y modificándolas según sea necesario. 
+Esta API REST proporciona un conjunto de servicios RESTful que permiten interactuar con una base de datos de notas. Los usuarios pueden gestionar sus notas de manera intuitiva, almacenándolas y modificándolas, ademas de otras funcionalidades según sea necesario. 
 
 ## Funcionalidades
 
-- **Crear una nueva nota**: Permite a los usuarios agregar nuevas notas con un título y contenido.
-- **Obtener todas las notas**: Permite visualizar todas las notas almacenadas.
+- **Crear una nueva nota**: Permite a los usuarios agregar nuevas notas con un título y contenido que puede ser texto o tareas.
+- **Obtener todas las notas**: Permite visualizar todas las notas almacenadas, ademas de contar con paginación.
 - **Obtener una nota específica**: Permite obtener los detalles de una nota en particular.
+- **Busqueda de notas**: Permite buscar notas a traves de algunos criterios, como titulo y etiquetas.
 - **Actualizar una nota**: Permite modificar el título y contenido de una nota existente.
-- **Eliminar una nota**: Permite eliminar una nota de la base de datos.
+- **Fijar una nota**: Permite fijar o desfijar una nota por encima de las demas.
+- **Eliminación Logica de una nota**: Permite eliminar una nota de forma logica, cambiando el estado de la nota en eliminado.
+- **Eliminación Logica de muchas notas**: Permite eliminar muchas notas de forma logica.
+- **Eliminación Física de una nota**: Permite eliminar una nota de forma física, borrandola completamente de la base de datos.
+- **Eliminación Logica de muchas notas**: Permite eliminar muchas notas de forma física.
+- **Restauración de una nota**: Permite restaurar una nota previamente eliminada de forma lógica.
+- **Restauración de muchas notas**: Permite restaurar muchas notas.
+- **Agregar una nota a favoritos**: Permite marcar una nota como favorita.
+- **Agregar muchas notas a favoritos**: Permite marcar muchas notas como favoritas.
 
 ## Endpoints
 
