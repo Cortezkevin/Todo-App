@@ -44,6 +44,15 @@ public class NoteHandler {
                 .body(noteService.findAllDeleted(page - 1, size), MinimalNoteDTO.class);
     }
 
+    public Mono<ServerResponse> findAllFavorite(ServerRequest request){
+        MultiValueMap<String, String> params = request.queryParams();
+        int page = params.getFirst("page") == null ? 1 : Integer.parseInt(params.getFirst("page"));
+        int size = params.getFirst("size") == null ? 5 : Integer.parseInt(params.getFirst("size"));
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(noteService.findAllFavorites(page - 1, size), MinimalNoteDTO.class);
+    }
+
     public Mono<ServerResponse> search(ServerRequest request){
         MultiValueMap<String, String> params = request.queryParams();
         int page = params.getFirst("page") == null ? 1 : Integer.parseInt(params.getFirst("page"));

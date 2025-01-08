@@ -253,6 +253,17 @@ public class NoteService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
+    public Flux<MinimalNoteDTO> findAllFavorites(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Query query = new Query().with(pageable);
+        query.addCriteria(Criteria.where("favorite").is(true));
+        query.with(Sort.by(Sort.Order.desc("createdAt")));
+
+        return mongoTemplate.find(query, Note.class)
+                .map(MinimalNoteDTO::toDTO);
+    }
+
     public Flux<MinimalNoteDTO> findAllDeleted(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
