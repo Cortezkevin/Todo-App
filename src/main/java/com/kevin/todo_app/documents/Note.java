@@ -31,4 +31,7 @@ public class Note {
     private LocalDateTime deletedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+
+    private String user;
 }

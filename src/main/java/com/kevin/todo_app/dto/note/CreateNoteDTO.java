@@ -9,6 +9,7 @@ public record CreateNoteDTO(
         String title,
         List<Element> content,
         List<String> tags,
-        Color color
+        Color color,
+        String user
 ) {
 }

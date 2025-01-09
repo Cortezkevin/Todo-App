@@ -7,6 +7,7 @@ import com.kevin.todo_app.dto.note.DetailedNoteDTO;
 import com.kevin.todo_app.dto.note.MinimalNoteDTO;
 import com.kevin.todo_app.dto.note.UpdateNoteDTO;
 import com.kevin.todo_app.dto.tag.TagDTO;
+import com.kevin.todo_app.helpers.AuthHelpers;
 import com.kevin.todo_app.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +19,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,6 +43,7 @@ public class NoteService {
     private final TagService tagService;
     private final ReactiveMongoTemplate mongoTemplate;
 
+    //@PostFilter("note.user == authentication.name")
     public Flux<MinimalNoteDTO> findAll(int page, int size){
         Pageable pageable = PageRequest.of(page, size);
 
@@ -46,7 +55,9 @@ public class NoteService {
                     .and(Sort.by(Sort.Order.desc("createdAt")))
         );
 
-        return mongoTemplate.find(query, Note.class)
+        return AuthHelpers.getCurrentUser()
+                .map(currentUser -> query.addCriteria(Criteria.where("user").is(currentUser)))
+                .flatMapMany(q -> mongoTemplate.find(q, Note.class))
                 .map(MinimalNoteDTO::toDTO);
     }
 
@@ -56,6 +67,7 @@ public class NoteService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
+    //@PostFilter("note.user == authentication.name")
     public Flux<MinimalNoteDTO> search(int page, int size, String title, List<String> tags) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -70,7 +82,9 @@ public class NoteService {
             query.addCriteria(Criteria.where("tags").in(tags));
         }
 
-        return mongoTemplate.find(query, Note.class)
+        return AuthHelpers.getCurrentUser()
+                .map(currentUser -> query.addCriteria(Criteria.where("user").is(currentUser)))
+                .flatMapMany(q -> mongoTemplate.find(q, Note.class))
                 .map(MinimalNoteDTO::toDTO);
     }
 
@@ -89,7 +103,8 @@ public class NoteService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
-    public Mono<DetailedNoteDTO> create(CreateNoteDTO createNoteDTO){
+    @PreAuthorize("(#c.user == authentication.name)")
+    public Mono<DetailedNoteDTO> create(@P("c") CreateNoteDTO createNoteDTO){
         return noteRepository.findByTitle(createNoteDTO.title())
                 .flatMap(note -> Mono.error(new RuntimeException("Note already exists with this title.")))
                 .switchIfEmpty(
@@ -102,12 +117,14 @@ public class NoteService {
                                     .createdAt(LocalDateTime.now())
                                     .color(createNoteDTO.color())
                                     .tags(tags.stream().map(TagDTO::name).toList())
+                                    .user(createNoteDTO.user())
                                     .build()
                             )
                         )
                 ).map(note -> DetailedNoteDTO.toDTO((Note) note));
     }
 
+    @PreAuthorize("(#c.user == authentication.name)")
     public Mono<DetailedNoteDTO> update(UpdateNoteDTO updateNoteDTO){
         return noteRepository.findById(updateNoteDTO.id())
                 .flatMap(note ->
@@ -253,6 +270,7 @@ public class NoteService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
+    //@PostFilter("note.user == authentication.name")
     public Flux<MinimalNoteDTO> findAllFavorites(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -260,7 +278,9 @@ public class NoteService {
         query.addCriteria(Criteria.where("favorite").is(true));
         query.with(Sort.by(Sort.Order.desc("createdAt")));
 
-        return mongoTemplate.find(query, Note.class)
+        return AuthHelpers.getCurrentUser()
+                .map(currentUser -> query.addCriteria(Criteria.where("user").is(currentUser)))
+                .flatMapMany(q -> mongoTemplate.find(q, Note.class))
                 .map(MinimalNoteDTO::toDTO);
     }
 
@@ -271,7 +291,10 @@ public class NoteService {
         query.addCriteria(Criteria.where("deleted").is(true));
         query.with(Sort.by(Sort.Order.desc("createdAt")));
 
-        return mongoTemplate.find(query, Note.class)
+        return AuthHelpers.getCurrentUser()
+                .map(currentUser -> query.addCriteria(Criteria.where("user").is(currentUser)))
+                .flatMapMany(q -> mongoTemplate.find(q, Note.class))
                 .map(MinimalNoteDTO::toDTO);
     }
+
 }
