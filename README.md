@@ -22,6 +22,8 @@ Esta API REST proporciona un conjunto de servicios RESTful que permiten interact
 - **Restauración de muchas notas**: Permite restaurar muchas notas.
 - **Agregar una nota a favoritos**: Permite marcar una nota como favorita.
 - **Agregar muchas notas a favoritos**: Permite marcar muchas notas como favoritas.
+- **Crear un usuario**: Permite crearte una cuenta para poder hacer uso de las endpoints.
+- **Login de usuario**: Permite loguearse con una cuenta ya existente.
 
 ## Endpoints
 
@@ -31,6 +33,23 @@ Crea una nueva nota.
 **Request body**:
 ```json
 {
-  "title": "Título de la nota",
-  "content": "Contenido de la nota"
+    "title": "Titulo de la nota",
+    "content": [
+      {
+        "index": 0,
+        "type": "text",
+        "text": "Contenido"
+      }
+      {
+        "index": 1,
+        "type": "task",
+        "description": "Descripcion de la tarea",
+        "completed: false
+      }
+    ],
+    "tags": [
+      "tag1","tag2"
+    ],
+    "color": "GREEN",
+    "user": "Usuario"
 }
