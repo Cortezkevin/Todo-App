@@ -103,28 +103,29 @@ public class NoteService {
                 .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
     }
 
-    @PreAuthorize("(#c.user == authentication.name)")
-    public Mono<DetailedNoteDTO> create(@P("c") CreateNoteDTO createNoteDTO){
+    public Mono<DetailedNoteDTO> create(CreateNoteDTO createNoteDTO){
         return noteRepository.findByTitle(createNoteDTO.title())
                 .flatMap(note -> Mono.error(new RuntimeException("Note already exists with this title.")))
                 .switchIfEmpty(
                     tagService.findAllOrCreateByName(createNoteDTO.tags()).collectList()
                         .flatMap(tags ->
-                            noteRepository.save(
-                                Note.builder()
-                                    .title(createNoteDTO.title())
-                                    .content(createNoteDTO.content())
-                                    .createdAt(LocalDateTime.now())
-                                    .color(createNoteDTO.color())
-                                    .tags(tags.stream().map(TagDTO::name).toList())
-                                    .user(createNoteDTO.user())
-                                    .build()
-                            )
+                            AuthHelpers.getCurrentUser()
+                                .flatMap( user ->
+                                    noteRepository.save(
+                                        Note.builder()
+                                            .title(createNoteDTO.title())
+                                            .content(createNoteDTO.content())
+                                            .createdAt(LocalDateTime.now())
+                                            .color(createNoteDTO.color())
+                                            .tags(tags.stream().map(TagDTO::name).toList())
+                                            .user(user)
+                                            .build()
+                                    )
+                                )
                         )
                 ).map(note -> DetailedNoteDTO.toDTO((Note) note));
     }
 
-    @PreAuthorize("(#c.user == authentication.name)")
     public Mono<DetailedNoteDTO> update(UpdateNoteDTO updateNoteDTO){
         return noteRepository.findById(updateNoteDTO.id())
                 .flatMap(note ->

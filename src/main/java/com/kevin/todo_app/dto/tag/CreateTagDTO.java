@@ -1,6 +1,8 @@
 package com.kevin.todo_app.dto.tag;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record CreateTagDTO(
-        String name
+        @NotBlank(message="Required") String name
 ) {
 }

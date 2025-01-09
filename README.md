@@ -44,7 +44,7 @@ Crea una nueva nota.
         "index": 1,
         "type": "task",
         "description": "Descripcion de la tarea",
-        "completed: false
+        "completed": false
       }
     ],
     "tags": [

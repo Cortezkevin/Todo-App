@@ -4,6 +4,7 @@ import com.kevin.todo_app.dto.note.CreateNoteDTO;
 import com.kevin.todo_app.dto.note.DetailedNoteDTO;
 import com.kevin.todo_app.dto.note.MinimalNoteDTO;
 import com.kevin.todo_app.dto.note.UpdateNoteDTO;
+import com.kevin.todo_app.helpers.ObjectValidator;
 import com.kevin.todo_app.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import java.util.List;
 public class NoteHandler {
 
     private final NoteService noteService;
+    private final ObjectValidator validator;
 
     public Mono<ServerResponse> findAll(ServerRequest request){
         MultiValueMap<String, String> params = request.queryParams();
@@ -79,7 +81,7 @@ public class NoteHandler {
     }
 
     public Mono<ServerResponse> create(ServerRequest request){
-        Mono<CreateNoteDTO> createNoteDTOMono = request.bodyToMono(CreateNoteDTO.class);
+        Mono<CreateNoteDTO> createNoteDTOMono = request.bodyToMono(CreateNoteDTO.class).doOnNext(validator::validate);
         return createNoteDTOMono.flatMap(createNoteDTO ->
                     ServerResponse.created(URI.create("/api/note"))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -88,7 +90,7 @@ public class NoteHandler {
     }
 
     public Mono<ServerResponse> update(ServerRequest request){
-        Mono<UpdateNoteDTO> updateNoteDTOMono = request.bodyToMono(UpdateNoteDTO.class);
+        Mono<UpdateNoteDTO> updateNoteDTOMono = request.bodyToMono(UpdateNoteDTO.class).doOnNext(validator::validate);
         return updateNoteDTOMono.flatMap(updateNoteDTO ->
                 ServerResponse.ok()
                     .contentType(MediaType.APPLICATION_JSON)
