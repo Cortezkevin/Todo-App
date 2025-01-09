@@ -10,6 +10,6 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface NoteRepository extends ReactiveMongoRepository<Note, String> {
     //Flux<Note> findByUserId(String userId);
-    Mono<Note> findByTitle(String title);
-    Mono<Boolean> existsByTitle(String title);
+    Mono<Note> findByTitleAndUser(String title, String user);
+    Mono<Boolean> existsByTitleAndUser(String title, String user);
 }
