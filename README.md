@@ -53,3 +53,46 @@ Crea una nueva nota.
     "color": "GREEN",
     "user": "Usuario"
 }
+```
+### 2. `GET /api/notes`
+Listar todas las notas con sus datos minimos por usuario
+
+### Parámetros de consulta (Query Parameters):
+
+- `page` (opcional): Npumero de pagina a mostrar.
+  - Tipo: `int`
+  - Ejemplo: `1,2,3...`
+  - Valor por defecto: `1`
+  
+- `size` (opcional): Cantidad de notas por pagina.
+  - Tipo: `int`
+  - Ejemplo: `5,6,7...`
+  - Valor por defecto: `5`
+
+**Response body**:
+```json
+[
+    {
+        "id": "677b0f54711d370d1c1dd0b1",
+        "title": "Nota 1",
+        "color": "GREEN",
+        "tags": [
+            "tag1",
+            "tag2"
+        ],
+        "createdAt": "2025-01-05T18:01:40.587",
+        "updatedAt": "2025-01-06T14:46:27.63",
+        "favorite": false,
+        "fixed": true
+    },
+    {
+        "id": "677f3b2b052bdf255af60359",
+        "title": "Nota 2",
+        "color": "GREEN",
+        "tags": [],
+        "createdAt": "2025-01-08T21:57:47.529",
+        "updatedAt": null,
+        "favorite": false,
+        "fixed": false
+    }
+]
