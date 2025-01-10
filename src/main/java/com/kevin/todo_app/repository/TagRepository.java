@@ -1,6 +1,6 @@
 package com.kevin.todo_app.repository;
 
-import com.kevin.todo_app.documents.Tag;
+import com.kevin.todo_app.documents.tag.Tag;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;

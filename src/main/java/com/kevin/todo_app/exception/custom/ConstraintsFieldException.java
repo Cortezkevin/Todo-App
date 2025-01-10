@@ -1,7 +1,6 @@
-package com.kevin.todo_app.exception;
+package com.kevin.todo_app.exception.custom;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 

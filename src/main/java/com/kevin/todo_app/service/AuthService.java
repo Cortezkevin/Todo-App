@@ -1,21 +1,19 @@
 package com.kevin.todo_app.service;
 
-import com.kevin.todo_app.documents.User;
+import com.kevin.todo_app.documents.user.User;
 import com.kevin.todo_app.dto.user.CreateUserDTO;
 import com.kevin.todo_app.dto.user.JwtDTO;
 import com.kevin.todo_app.dto.user.LoginUserDTO;
 import com.kevin.todo_app.dto.user.UserDTO;
 import com.kevin.todo_app.enums.RolName;
-import com.kevin.todo_app.exception.AlreadyExistsResourceWithFieldException;
-import com.kevin.todo_app.exception.InvalidCredentialsException;
-import com.kevin.todo_app.exception.PasswordsNotMatchException;
-import com.kevin.todo_app.exception.ResourceNotFoundException;
+import com.kevin.todo_app.exception.custom.AlreadyExistsResourceWithFieldException;
+import com.kevin.todo_app.exception.custom.InvalidCredentialsException;
+import com.kevin.todo_app.exception.custom.PasswordsNotMatchException;
+import com.kevin.todo_app.exception.custom.ResourceNotFoundException;
 import com.kevin.todo_app.repository.AuthRepository;
 import com.kevin.todo_app.security.jwt.JwtProvider;
 import com.kevin.todo_app.security.model.MainUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

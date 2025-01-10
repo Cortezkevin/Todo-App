@@ -1,6 +1,6 @@
 package com.kevin.todo_app.security.model;
 
-import com.kevin.todo_app.documents.User;
+import com.kevin.todo_app.documents.user.User;
 import com.kevin.todo_app.enums.RolName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.kevin.todo_app.documents;
+package com.kevin.todo_app.documents.note;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

@@ -1,4 +1,4 @@
-package com.kevin.todo_app.documents;
+package com.kevin.todo_app.documents.tag;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.kevin.todo_app.documents;
+package com.kevin.todo_app.documents.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kevin.todo_app.enums.RolName;

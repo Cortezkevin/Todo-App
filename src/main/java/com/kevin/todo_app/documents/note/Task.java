@@ -1,4 +1,4 @@
-package com.kevin.todo_app.documents;
+package com.kevin.todo_app.documents.note;
 
 import lombok.*;
 

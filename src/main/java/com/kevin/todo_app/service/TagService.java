@@ -1,6 +1,6 @@
 package com.kevin.todo_app.service;
 
-import com.kevin.todo_app.documents.Tag;
+import com.kevin.todo_app.documents.tag.Tag;
 import com.kevin.todo_app.dto.tag.CreateTagDTO;
 import com.kevin.todo_app.dto.tag.TagDTO;
 import com.kevin.todo_app.repository.TagRepository;

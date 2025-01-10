@@ -1,5 +1,6 @@
-package com.kevin.todo_app.exception;
+package com.kevin.todo_app.exception.config;
 
+import com.kevin.todo_app.exception.custom.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;

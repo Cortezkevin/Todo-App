@@ -1,4 +1,4 @@
-package com.kevin.todo_app.exception;
+package com.kevin.todo_app.exception.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.WebProperties;

@@ -1,4 +1,4 @@
-package com.kevin.todo_app.exception;
+package com.kevin.todo_app.exception.custom;
 
 public class PasswordsNotMatchException extends Exception{
     public PasswordsNotMatchException() {

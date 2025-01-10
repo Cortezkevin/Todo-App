@@ -1,4 +1,4 @@
-package com.kevin.todo_app.documents;
+package com.kevin.todo_app.documents.note;
 import com.kevin.todo_app.enums.Color;
 import lombok.*;
 import org.springframework.data.annotation.Id;

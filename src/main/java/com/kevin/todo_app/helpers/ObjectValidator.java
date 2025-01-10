@@ -1,6 +1,6 @@
 package com.kevin.todo_app.helpers;
 
-import com.kevin.todo_app.exception.ConstraintsFieldException;
+import com.kevin.todo_app.exception.custom.ConstraintsFieldException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;

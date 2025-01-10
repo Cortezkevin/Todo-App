@@ -1,4 +1,4 @@
-package com.kevin.todo_app.exception;
+package com.kevin.todo_app.exception.custom;
 
 public class AlreadyExistsResourceWithFieldException extends Exception{
     public AlreadyExistsResourceWithFieldException() {
