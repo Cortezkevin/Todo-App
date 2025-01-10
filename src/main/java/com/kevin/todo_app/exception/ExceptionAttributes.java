@@ -23,6 +23,22 @@ public class ExceptionAttributes extends DefaultErrorAttributes {
             errorAttributes.put("status", HttpStatus.NOT_FOUND);
             errorAttributes.put("message", resourceNotFoundException.getMessage());
         }
+        if(throwable instanceof AlreadyExistsResourceWithFieldException alreadyExistsResourceWithFieldException){
+            errorAttributes.put("status", HttpStatus.BAD_REQUEST);
+            errorAttributes.put("message", alreadyExistsResourceWithFieldException.getMessage());
+        }
+        if(throwable instanceof PasswordsNotMatchException passwordsNotMatchException){
+            errorAttributes.put("status", HttpStatus.BAD_REQUEST);
+            errorAttributes.put("message", passwordsNotMatchException.getMessage());
+        }
+        if(throwable instanceof InvalidCredentialsException invalidCredentialsException){
+            errorAttributes.put("status", HttpStatus.BAD_REQUEST);
+            errorAttributes.put("message", invalidCredentialsException.getMessage());
+        }
+        if(throwable instanceof NotInTheTrashException notInTheTrashException){
+            errorAttributes.put("status", HttpStatus.BAD_REQUEST);
+            errorAttributes.put("message", notInTheTrashException.getMessage());
+        }
         if ( throwable instanceof ConstraintsFieldException constraintsFieldException ){
             errorAttributes.put("fields", constraintsFieldException.getFieldsErrors());
             errorAttributes.put("status", HttpStatus.BAD_REQUEST);

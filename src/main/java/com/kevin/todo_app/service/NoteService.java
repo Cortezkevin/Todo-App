@@ -2,11 +2,15 @@ package com.kevin.todo_app.service;
 
 import com.kevin.todo_app.documents.Element;
 import com.kevin.todo_app.documents.Note;
+import com.kevin.todo_app.documents.User;
 import com.kevin.todo_app.dto.note.CreateNoteDTO;
 import com.kevin.todo_app.dto.note.DetailedNoteDTO;
 import com.kevin.todo_app.dto.note.MinimalNoteDTO;
 import com.kevin.todo_app.dto.note.UpdateNoteDTO;
 import com.kevin.todo_app.dto.tag.TagDTO;
+import com.kevin.todo_app.exception.AlreadyExistsResourceWithFieldException;
+import com.kevin.todo_app.exception.NotInTheTrashException;
+import com.kevin.todo_app.exception.ResourceNotFoundException;
 import com.kevin.todo_app.helpers.AuthHelpers;
 import com.kevin.todo_app.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,12 +42,16 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class NoteService {
-
     private final NoteRepository noteRepository;
     private final TagService tagService;
     private final ReactiveMongoTemplate mongoTemplate;
 
-    //@PostFilter("note.user == authentication.name")
+    private Mono<Note> findNoteById(String id){
+        return noteRepository.findById(id)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Note","Id",id)));
+    }
+
+
     public Flux<MinimalNoteDTO> findAll(int page, int size){
         Pageable pageable = PageRequest.of(page, size);
 
@@ -62,12 +70,10 @@ public class NoteService {
     }
 
     public Mono<DetailedNoteDTO> findById(String id){
-        return noteRepository.findById(id)
-                .map(DetailedNoteDTO::toDTO)
-                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+        return this.findNoteById(id)
+                .map(DetailedNoteDTO::toDTO);
     }
 
-    //@PostFilter("note.user == authentication.name")
     public Flux<MinimalNoteDTO> search(int page, int size, String title, List<String> tags) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -89,7 +95,7 @@ public class NoteService {
     }
 
     public Mono<DetailedNoteDTO> toggleFixNote(String id){
-        return noteRepository.findById(id)
+        return this.findNoteById(id)
                 .flatMap(note -> {
                     if(note.isFixed()){
                         note.setFixed(false);
@@ -99,15 +105,14 @@ public class NoteService {
                         note.setFixedAt(LocalDateTime.now());
                     }
                     return noteRepository.save(note);
-                }).map(DetailedNoteDTO::toDTO)
-                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+                }).map(DetailedNoteDTO::toDTO);
     }
 
     public Mono<DetailedNoteDTO> create(CreateNoteDTO createNoteDTO){
         return AuthHelpers.getCurrentUser()
                 .flatMap( user ->
                         noteRepository.findByTitleAndUser(createNoteDTO.title(), user)
-                            .flatMap(note -> Mono.error(new RuntimeException("Note already exists with this title.")))
+                            .flatMap(note -> Mono.error(new AlreadyExistsResourceWithFieldException("Note","Title",createNoteDTO.title())))
                             .switchIfEmpty(
                                 tagService.findAllOrCreateByName(createNoteDTO.tags())
                                     .collectList()
@@ -131,12 +136,12 @@ public class NoteService {
     public Mono<DetailedNoteDTO> update(UpdateNoteDTO updateNoteDTO){
         return AuthHelpers.getCurrentUser()
                 .flatMap( user ->
-                    noteRepository.findById(updateNoteDTO.id())
+                    this.findNoteById(updateNoteDTO.id())
                         .flatMap(note ->
                             noteRepository.existsByTitleAndUser(updateNoteDTO.title(), user)
                                 .flatMap(existsTitle -> {
                                     if(existsTitle && !note.getTitle().equals(updateNoteDTO))
-                                        return Mono.error(new RuntimeException("This title already in use."));
+                                        return Mono.error(new AlreadyExistsResourceWithFieldException("Note","Title",updateNoteDTO.title()));
 
                                     // Obtener los elementos previos
                                     List<Element> prevElements = note.getContent();
@@ -187,17 +192,15 @@ public class NoteService {
                                 })
                         )
                 )
-                .map(DetailedNoteDTO::toDTO)
-                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+                .map(DetailedNoteDTO::toDTO);
     }
 
     public Mono<DetailedNoteDTO> toggleFavorite(String id){
-        return noteRepository.findById(id)
+        return this.findNoteById(id)
                 .flatMap(note -> {
                     note.setFavorite(!note.isFavorite());
                     return noteRepository.save(note);
-                }).map(DetailedNoteDTO::toDTO)
-                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+                }).map(DetailedNoteDTO::toDTO);
     }
 
     public Flux<DetailedNoteDTO> toggleFavorite(List<String> ids){
@@ -212,13 +215,12 @@ public class NoteService {
     }
 
     public Mono<DetailedNoteDTO> restoreById(String id){
-        return noteRepository.findById(id)
+        return this.findNoteById(id)
                 .flatMap(note -> {
                     note.setDeleted(false);
                     note.setDeletedAt(null);
                     return noteRepository.save(note);
-                }).map(DetailedNoteDTO::toDTO)
-                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+                }).map(DetailedNoteDTO::toDTO);
     }
 
     public Flux<DetailedNoteDTO> restoreByIds(List<String> ids){
@@ -246,13 +248,12 @@ public class NoteService {
     }
 
     public Mono<DetailedNoteDTO> logicalDeleteById(String id){
-        return noteRepository.findById(id)
+        return this.findNoteById(id)
                 .flatMap(note -> {
                     note.setDeleted(true);
                     note.setDeletedAt(LocalDateTime.now());
                     return noteRepository.save(note);
-                }).map(DetailedNoteDTO::toDTO)
-                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+                }).map(DetailedNoteDTO::toDTO);
     }
 
     public Mono<String> physicalDeleteByIds(List<String> ids){
@@ -264,19 +265,17 @@ public class NoteService {
     }
 
     public Mono<String> physicalDeleteById(String id){
-        return noteRepository.findById(id)
+        return this.findNoteById(id)
                 .flatMap(note -> {
                     if( note.isDeleted() ){
                         return noteRepository.deleteById(id);
                     }else {
-                        return Mono.error(new RuntimeException("La nota debe estar en la papelera."));
+                        return Mono.error(new NotInTheTrashException());
                     }
                 })
-                .then(Mono.just("Nota eliminada totalmente."))
-                .switchIfEmpty(Mono.error(new RuntimeException("Note not found.")));
+                .then(Mono.just("Nota eliminada totalmente."));
     }
 
-    //@PostFilter("note.user == authentication.name")
     public Flux<MinimalNoteDTO> findAllFavorites(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
