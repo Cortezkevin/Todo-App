@@ -1,5 +1,6 @@
 package com.kevin.todo_app.exception.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kevin.todo_app.exception.custom.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -20,6 +21,9 @@ public class ExceptionAttributes extends DefaultErrorAttributes {
     public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
         Map<String, Object> errorAttributes = new HashMap<>();
         Throwable throwable = super.getError(request);
+
+        errorAttributes.put("detail", null);
+
         switch (throwable) {
             case ResourceNotFoundException resourceNotFoundException -> {
                 errorAttributes.put("status", HttpStatus.NOT_FOUND);
@@ -48,26 +52,31 @@ public class ExceptionAttributes extends DefaultErrorAttributes {
             }
             case MalformedJwtException malformedJwtException -> {
                 errorAttributes.put("message", "The token is malformed");
-                errorAttributes.put("detailError", malformedJwtException.getMessage());
+                errorAttributes.put("detail", malformedJwtException.getMessage());
                 errorAttributes.put("status", HttpStatus.BAD_REQUEST);
             }
             case SignatureException signatureException -> {
                 errorAttributes.put("message", "The token is invalid");
-                errorAttributes.put("detailError", signatureException.getMessage());
+                errorAttributes.put("detail", signatureException.getMessage());
                 errorAttributes.put("status", HttpStatus.BAD_REQUEST);
             }
             case ExpiredJwtException expiredJwtException -> {
                 errorAttributes.put("message", "The session has expired");
-                errorAttributes.put("detailError", expiredJwtException.getMessage());
+                errorAttributes.put("detail", expiredJwtException.getMessage());
                 errorAttributes.put("status", HttpStatus.BAD_REQUEST);
             }
             case null, default -> {
                 errorAttributes.put("status", HttpStatus.INTERNAL_SERVER_ERROR);
                 errorAttributes.put("message", "An unexpected error occurred.");
-                errorAttributes.put("detailError", throwable.getMessage());
+                errorAttributes.put("detail", throwable.getMessage());
                 errorAttributes.put("errorType", "UnknownException");
             }
         }
         return errorAttributes;
+    }
+
+    private Map<?,?> toMap(Object o){
+        ObjectMapper mapper = new ObjectMapper();
+        return  mapper.convertValue(o, Map.class);
     }
 }
