@@ -15,6 +15,7 @@ public class AuthRouter {
     @Bean
     public RouterFunction<ServerResponse> authRoute(AuthHandler authHandler){
         return RouterFunctions.route()
+                .GET(PATH + "/find/{id}", authHandler::findById)
                 .POST(PATH + "/login", authHandler::login)
                 .POST(PATH + "/register", authHandler::create)
                 .GET(PATH + "/sendEmail/{to}", authHandler::sendEmail)

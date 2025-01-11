@@ -31,9 +31,9 @@ public class AuthService {
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("User","Id",id)));
     }
 
-    public Mono<UserDTO> findById(String id){
+    public Mono<UserDTO> findById(String id) {
         return this.findUserById(id)
-                        .map(UserDTO::toDTO);
+                .map(UserDTO::toDTO);
     }
 
     public Mono<JwtDTO> create(CreateUserDTO createUserDTO){

@@ -1,9 +1,6 @@
 package com.kevin.todo_app.handler;
 
-import com.kevin.todo_app.dto.user.ChangePasswordDTO;
-import com.kevin.todo_app.dto.user.CreateUserDTO;
-import com.kevin.todo_app.dto.user.JwtDTO;
-import com.kevin.todo_app.dto.user.LoginUserDTO;
+import com.kevin.todo_app.dto.user.*;
 import com.kevin.todo_app.helpers.ObjectValidator;
 import com.kevin.todo_app.service.AuthService;
 import com.kevin.todo_app.service.EmailService;
@@ -22,9 +19,16 @@ public class AuthHandler {
     private final EmailService emailService;
     private final ObjectValidator validator;
 
+    public Mono<ServerResponse> findById(ServerRequest request){
+        String id = request.pathVariable("id");
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(authService.findById(id), UserDTO.class);
+    }
+
     public Mono<ServerResponse> create(ServerRequest req) {
         Mono<CreateUserDTO> createUserDTOMono = req.bodyToMono(CreateUserDTO.class).doOnNext(validator::validate);
-        return  createUserDTOMono.flatMap( createUserDTO -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body( authService.create(createUserDTO), JwtDTO.class ) );
+        return createUserDTOMono.flatMap( createUserDTO -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body( authService.create(createUserDTO), JwtDTO.class ) );
     }
 
     public Mono<ServerResponse> login( ServerRequest req ){
