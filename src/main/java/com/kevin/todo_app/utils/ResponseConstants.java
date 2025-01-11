@@ -12,10 +12,20 @@ public class ResponseConstants {
     public final static String SUCCESS_LOGIN = "Logged successfully";
     public final static String NOTE_CREATED = "New note has been created";
     public final static String NOTE_UPDATED = "Note updated successfully";
+
     public final static String NOTE_FAVORITE_ADDED = "Note added to the favorites";
+    public final static String NOTE_FAVORITE_REMOVED = "Note removed to the favorites";
+
+    public final static String NOTES_FAVORITE_UPDATED = "Notes favorites updated";
+
+    public final static String NOTES_TRASH_ADDED = "Notes added to the trash";
     public final static String NOTE_TRASH_ADDED = "Note added to the trash";
+
+    public final static String NOTES_DELETED = "Notes deleted successfully";
     public final static String NOTE_DELETED = "Note deleted successfully";
 
     public final static String TAG_CREATED = "New Tag has been created";
 
+    public static final String NOTES_RESTORED = "Notes restored successfully";
+    public static final String NOTE_RESTORED = "Note restored successfully";
 }

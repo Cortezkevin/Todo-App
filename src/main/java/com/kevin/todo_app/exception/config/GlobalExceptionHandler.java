@@ -21,20 +21,20 @@ import java.util.Optional;
 @Slf4j
 public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
 
-    public GlobalExceptionHandler(ErrorAttributes errorAttributes, WebProperties.Resources resources, ApplicationContext applicationContext, ServerCodecConfigurer codecConfigurer) {
-        super(errorAttributes, resources, applicationContext);
-        this.setMessageReaders(codecConfigurer.getReaders());
-        this.setMessageWriters(codecConfigurer.getWriters());
-    }
+   public GlobalExceptionHandler(ErrorAttributes errorAttributes, WebProperties.Resources resources, ApplicationContext applicationContext, ServerCodecConfigurer codecConfigurer) {
+      super(errorAttributes, resources, applicationContext);
+      this.setMessageReaders(codecConfigurer.getReaders());
+      this.setMessageWriters(codecConfigurer.getWriters());
+   }
 
-    @Override
-    protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
-        return RouterFunctions.route(RequestPredicates.all(), this::customErrorResponse);
-    }
+   @Override
+   protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
+      return RouterFunctions.route(RequestPredicates.all(), this::customErrorResponse);
+   }
 
-    private Mono<ServerResponse> customErrorResponse(ServerRequest serverRequest) {
-        Map<String, Object> errorMap = this.getErrorAttributes(serverRequest, ErrorAttributeOptions.defaults());
-        HttpStatus status = ( HttpStatus ) Optional.ofNullable(errorMap.get("status")).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
-        return ServerResponse.status(status).contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(errorMap));
-    }
+   private Mono<ServerResponse> customErrorResponse(ServerRequest serverRequest) {
+      Map<String, Object> errorMap = this.getErrorAttributes(serverRequest, ErrorAttributeOptions.defaults());
+      HttpStatus status = (HttpStatus) Optional.ofNullable(errorMap.get("status")).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
+      return ServerResponse.status(status).contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(errorMap));
+   }
 }

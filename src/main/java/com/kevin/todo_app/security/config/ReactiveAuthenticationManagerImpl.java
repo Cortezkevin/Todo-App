@@ -16,23 +16,23 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class ReactiveAuthenticationManagerImpl implements ReactiveAuthenticationManager {
-    private final JwtProvider jwtProvider;
+   private final JwtProvider jwtProvider;
 
-    @Override
-    public Mono<Authentication> authenticate(Authentication authentication) {
-        String authToken = authentication.getCredentials().toString();
-        String username = jwtProvider.getUserNameFromToken(authToken);
-        return Mono.just(jwtProvider.validateToken(authToken))
-                .filter(valid -> valid)
-                .switchIfEmpty(Mono.empty())
-                .map(valid -> {
-                    Claims claims = jwtProvider.getAllClaimsFromToken(authToken);
-                    List<String> roles = claims.get("roles", List.class);
-                    return new UsernamePasswordAuthenticationToken(
-                            username,
-                            null,
-                            roles.stream().map( SimpleGrantedAuthority::new ).collect(Collectors.toList())
-                    );
-                });
-    }
+   @Override
+   public Mono<Authentication> authenticate(Authentication authentication) {
+      String authToken = authentication.getCredentials().toString();
+      String username = jwtProvider.getUserNameFromToken(authToken);
+      return Mono.just(jwtProvider.validateToken(authToken))
+         .filter(valid -> valid)
+         .switchIfEmpty(Mono.empty())
+         .map(valid -> {
+            Claims claims = jwtProvider.getAllClaimsFromToken(authToken);
+            List<String> roles = claims.get("roles", List.class);
+            return new UsernamePasswordAuthenticationToken(
+               username,
+               null,
+               roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
+            );
+         });
+   }
 }

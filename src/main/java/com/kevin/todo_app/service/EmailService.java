@@ -21,42 +21,43 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender javaMailSender;
-    private final TemplateEngine templateEngine;
-    private final AuthRepository userRepository;
+   private final JavaMailSender javaMailSender;
+   private final TemplateEngine templateEngine;
+   private final AuthRepository userRepository;
 
-    public Mono<String> sendHtmlTemplateEmail(String to ){
-        Mono<User> user = userRepository.findByEmail( to );
-        return user.flatMap( userFound -> Mono.fromCallable(() -> {
-                    try {
-                        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-                        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-                        Context context = new Context();
+   public Mono<String> sendHtmlTemplateEmail(String to) {
+      Mono<User> user = userRepository.findByEmail(to);
+      return user.flatMap(userFound ->
+         Mono.fromCallable(() -> {
+            try {
+               MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+               MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+               Context context = new Context();
 
-                        UUID token = UUID.randomUUID();
-                        userFound.setTokenPassword( token.toString() );
+               UUID token = UUID.randomUUID();
+               userFound.setTokenPassword(token.toString());
 
-                        userRepository.save( userFound ).subscribe();
+               userRepository.save(userFound).subscribe();
 
-                        Map<String, Object> model = new HashMap<>();
-                        model.put("username", userFound.getEmail());
-                        model.put("url", "http://localhost:4200/changePassword/" + token);
-                        context.setVariables( model );
+               Map<String, Object> model = new HashMap<>();
+               model.put("username", userFound.getEmail());
+               model.put("url", "http://localhost:4200/changePassword/" + token);
+               context.setVariables(model);
 
-                        String htmlText =  templateEngine.process("email_template", context);
-                        helper.setFrom("cortezkevinq@gmail.com");
-                        helper.setTo(to);
-                        helper.setSubject("Prueba envio email");
-                        helper.setText(htmlText, true);
+               String htmlText = templateEngine.process("email_template", context);
+               helper.setFrom("cortezkevinq@gmail.com");
+               helper.setTo(to);
+               helper.setSubject("Prueba envio email");
+               helper.setText(htmlText, true);
 
-                        javaMailSender.send(mimeMessage);
-                        return "Email de confirmación enviado";
-                    }catch (MessagingException e) {
-                        return "Ocurrió un error al enviar el email";
-                    }
-                }) )
-                .switchIfEmpty( Mono.error( new ResourceNotFoundException("User","Email",to)) );
-    }
+               javaMailSender.send(mimeMessage);
+               return "Email de confirmación enviado";
+            } catch (MessagingException e) {
+               return "Ocurrió un error al enviar el email";
+            }
+         }))
+      .switchIfEmpty(Mono.error(new ResourceNotFoundException("User", "Email", to)));
+   }
 
 }
 

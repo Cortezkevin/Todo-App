@@ -18,51 +18,43 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TagService {
 
-    private final TagRepository tagRepository;
+   private final TagRepository tagRepository;
 
-    public Flux<TagDTO> findAll(){
-        return tagRepository.findAll()
-                .map(TagDTO::toDTO);
-    }
+   public Flux<TagDTO> findAll() {
+      return tagRepository.findAll()
+         .map(TagDTO::toDTO);
+   }
 
-    public Mono<TagDTO> create(CreateTagDTO createTagDTO){
-        return tagRepository.save(
-                Tag.builder()
-                    .name(createTagDTO.name())
-                    .build()
-        ).map(TagDTO::toDTO);
-    }
+   public Mono<TagDTO> create(CreateTagDTO createTagDTO) {
+      return tagRepository.save(
+         Tag.builder()
+            .name(createTagDTO.name())
+            .build()
+      ).map(TagDTO::toDTO);
+   }
 
-    public Flux<TagDTO> findAllOrCreateByName(List<String> nameList){
-        log.info("nameList -> {}", nameList);
-        return tagRepository.findAllByName(nameList)
-                .collectList()
-                .flatMapMany(existingTags -> {
-                    List<String> existingNames = existingTags.stream()
-                            .map(Tag::getName)
-                            .toList();
+   public Flux<TagDTO> findAllOrCreateByName(List<String> nameList) {
+      return tagRepository.findAllByName(nameList)
+         .collectList()
+         .flatMapMany(existingTags -> {
+            List<String> existingNames = existingTags.stream()
+               .map(Tag::getName)
+               .toList();
 
-                    log.info("existingTags -> {}", existingNames);
+            List<String> notFoundNames = nameList.stream()
+               .filter(name -> !existingNames.contains(name))
+               .toList();
 
-                    List<String> notFoundNames = nameList.stream()
-                            .filter(name -> !existingNames.contains(name))
-                            .toList();
+            Flux<Tag> newTags = tagRepository.saveAll(
+               notFoundNames.stream()
+                  .map(newName -> Tag.builder().name(newName).build())
+                  .collect(Collectors.toList())
+            );
 
-                    log.info("notFoundNames -> {}", notFoundNames);
-
-
-                    Flux<Tag> newTags = tagRepository.saveAll(
-                            notFoundNames.stream()
-                                    .map(newName -> Tag.builder().name(newName).build())
-                                    .collect(Collectors.toList())
-                    );
-
-                    log.info("newTags -> {}", newTags);
-
-                    return Flux.concat(
-                            Flux.fromIterable(existingTags),
-                            newTags
-                    ).map(TagDTO::toDTO);
-                });
-    }
+            return Flux.concat(
+               Flux.fromIterable(existingTags),
+               newTags
+            ).map(TagDTO::toDTO);
+         });
+   }
 }
