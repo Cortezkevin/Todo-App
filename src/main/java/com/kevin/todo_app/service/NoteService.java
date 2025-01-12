@@ -37,10 +37,10 @@ public class NoteService {
    private final ReactiveMongoTemplate mongoTemplate;
 
    private Mono<Note> findNoteById(String id) {
-      return noteRepository.findById(id)
+      return AuthHelpers.getCurrentUser()
+         .flatMap(currentUser -> noteRepository.findByIdAndUser(id, currentUser))
          .switchIfEmpty(Mono.error(new ResourceNotFoundException("Note", "Id", id)));
    }
-
 
    public Flux<MinimalNoteDTO> findAll(int page, int size) {
       Pageable pageable = PageRequest.of(page, size);
