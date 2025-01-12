@@ -96,3 +96,6 @@ Listar todas las notas con sus datos minimos por usuario
         "fixed": false
     }
 ]
+```
+### 3. `GET /api/note/{id}`
+Buscar nota por id, perteneciente al usuario autenticado
