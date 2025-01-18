@@ -55,7 +55,7 @@ Crea una nueva nota.
 }
 ```
 ### 2. `GET /api/notes`
-Listar todas las notas con sus datos minimos por usuario
+Listar todas las notas con sus datos minimos por usuario.
 
 ### Parámetros de consulta (Query Parameters):
 
@@ -98,10 +98,13 @@ Listar todas las notas con sus datos minimos por usuario
 ]
 ```
 ### 3. `GET /api/note/{id}`
-Buscar nota por ID, perteneciente al usuario autenticado
+Buscar nota por ID, perteneciente al usuario autenticado.
 
 ### 4. `PUT /api/note`
-Realiza la actualización de una nota existente
+Realiza la actualización de una nota existente.
 
-### 5. `PUT /api/note/logicalDelete`
-Elimina lógicamente una nota, la agrega a la papelera
+### 5. `PUT /api/note/logicalDelete/{id}`
+Elimina lógicamente una nota por su ID, la agrega a la papelera.
+
+### 5. `PUT /api/note/restore/{id}`
+Restaura una nota de la papelera por su ID
