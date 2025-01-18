@@ -14,10 +14,10 @@ Esta API REST proporciona un conjunto de servicios RESTful que permiten interact
 - **Búsqueda de notas**: Permite buscar notas a travels de algunos criterios, como titulo y etiquetas.
 - **Actualizar una nota**: Permite modificar el título y contenido de una nota existente.
 - **Fijar una nota**: Permite fijar o desfijar una nota por encima de las demás.
-- **Eliminación Logica de una nota**: Permite eliminar una nota de forma logic, cambiando el estado de la nota en eliminado.
-- **Eliminación Logica de muchas notas**: Permite eliminar muchas notas de forma logic.
+- **Eliminación Lógica de una nota**: Permite eliminar una nota de forma logic, cambiando el estado de la nota en eliminado.
+- **Eliminación Lógica de muchas notas**: Permite eliminar muchas notas de forma logic.
 - **Eliminación Física de una nota**: Permite eliminar una nota de forma física, borrándola completamente de la base de datos.
-- **Eliminación Logica de muchas notas**: Permite eliminar muchas notas de forma física.
+- **Eliminación Lógica de muchas notas**: Permite eliminar muchas notas de forma física.
 - **Restauración de una nota**: Permite restaurar una nota previamente eliminada de forma lógica.
 - **Restauración de muchas notas**: Permite restaurar muchas notas.
 - **Agregar una nota a favoritos**: Permite marcar una nota como favorita.
@@ -98,4 +98,10 @@ Listar todas las notas con sus datos minimos por usuario
 ]
 ```
 ### 3. `GET /api/note/{id}`
-Buscar nota por id, perteneciente al usuario autenticado
+Buscar nota por ID, perteneciente al usuario autenticado
+
+### 4. `PUT /api/note`
+Realiza la actualización de una nota existente
+
+### 5. `PUT /api/note/logicalDelete`
+Elimina lógicamente una nota, la agrega a la papelera
