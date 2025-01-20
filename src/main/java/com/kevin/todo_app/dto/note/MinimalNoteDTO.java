@@ -9,7 +9,7 @@ import java.util.List;
 public record MinimalNoteDTO(
         String id,
         String title,
-        Color color,
+        String color,
         List<String> tags,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,

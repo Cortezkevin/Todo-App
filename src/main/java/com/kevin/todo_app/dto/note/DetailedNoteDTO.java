@@ -11,7 +11,7 @@ public record DetailedNoteDTO(
     String id,
     String title,
     List<Element> content,
-    Color color,
+    String color,
     List<String> tags,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,

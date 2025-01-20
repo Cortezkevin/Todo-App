@@ -12,6 +12,6 @@ public record UpdateNoteDTO(
         @NotBlank(message="Required") String title,
         @NotNull(message="Required or Empty Array") List<Element> content,
         @NotNull(message="Required or Empty Array") List<String> tags,
-        @NotNull(message="Required") Color color
+        @NotNull(message="Required") String color
 ) {
 }

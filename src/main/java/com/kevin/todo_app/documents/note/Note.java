@@ -1,5 +1,4 @@
 package com.kevin.todo_app.documents.note;
-import com.kevin.todo_app.enums.Color;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,7 +17,7 @@ public class Note {
     private String id;
     private String title;
 
-    private Color color = Color.DEFAULT;
+    private String color = "default";
     private List<Element> content = new ArrayList<>();
     private List<String> tags = new ArrayList<>();
 
