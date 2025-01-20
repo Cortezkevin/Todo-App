@@ -55,11 +55,11 @@ Crea una nueva nota.
 }
 ```
 ### 2. `GET /api/notes`
-Listar todas las notas con sus datos minimos por usuario
+Listar todas las notas con sus datos minimos por usuario.
 
 ### Parámetros de consulta (Query Parameters):
 
-- `page` (opcional): Npumero de pagina a mostrar.
+- `page` (opcional): Número de pagina a mostrar.
   - Tipo: `int`
   - Ejemplo: `1,2,3...`
   - Valor por defecto: `1`
@@ -98,10 +98,34 @@ Listar todas las notas con sus datos minimos por usuario
 ]
 ```
 ### 3. `GET /api/note/{id}`
-Buscar nota por ID, perteneciente al usuario autenticado
+Buscar nota por ID, perteneciente al usuario autenticado.
 
 ### 4. `PUT /api/note`
-Realiza la actualización de una nota existente
+Realiza la actualización de una nota existente.
 
-### 5. `PUT /api/note/logicalDelete`
-Elimina lógicamente una nota, la agrega a la papelera
+### 5. `PUT /api/note/logicalDelete/one/{id}`
+Elimina lógicamente una nota por su ID, la agrega a la papelera.
+
+### 5. `PUT /api/note/logicalDelete/many`
+Elimina lógicamente muchas notas por sus ID, las agrega a la papelera.
+
+### Parámetros de consulta (Query Parameters):
+
+- `ids` (Requerido): Lista de los ids a agregar a la papelera.
+  - Tipo: `List<String>`
+  - Ejemplo: `["id1","id2",...]`
+
+### 5. `PUT /api/note/restore/one/{id}`
+Restaura una nota de la papelera por su ID
+
+### 5. `PUT /api/note/restore/many`
+Restaura muchas notas de la papelera por sus ID
+
+### Parámetros de consulta (Query Parameters):
+
+- `ids` (Requerido): Lista de los ids a restaurar de la papelera.
+  - Tipo: `List<String>`
+  - Ejemplo: `["id1","id2",...]`
+
+### 5. `PUT /api/note/phisycalDelete/{id}`
+Restaura una nota de la papelera por su ID
