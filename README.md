@@ -6,6 +6,14 @@ Bienvenido al repositorio de la **API REST** para una **aplicación web de notas
 
 Esta API REST proporciona un conjunto de servicios RESTful que permiten interactuar con una base de datos de notas. Los usuarios pueden gestionar sus notas de manera intuitiva, almacenándolas y modificándolas, ademas de otras funcionalidades según sea necesario. 
 
+## Tecnologias Implementadas
+- Spring Boot
+- Spring Security
+- Spring WebFlux
+- MongoDB
+- Java Mail
+- JWT
+
 ## Funcionalidades
 
 - **Crear una nueva nota**: Permite a los usuarios agregar nuevas notas con un título y contenido que puede ser texto o tareas.
@@ -24,6 +32,7 @@ Esta API REST proporciona un conjunto de servicios RESTful que permiten interact
 - **Agregar muchas notas a favoritos**: Permite marcar muchas notas como favoritas.
 - **Crear un usuario**: Permite crearte una cuenta para poder hacer uso de las endpoints.
 - **Login de usuario**: Permite loguearse con una cuenta ya existente.
+- **Cambio de contraseña**: Permite al usuario existente poder cambiar su contraseña.
 
 ## Endpoints
 
@@ -50,7 +59,7 @@ Crea una nueva nota.
     "tags": [
       "tag1","tag2"
     ],
-    "color": "GREEN",
+    "color": "#fff",
     "user": "Usuario"
 }
 ```
@@ -75,7 +84,7 @@ Listar todas las notas con sus datos minimos por usuario.
     {
         "id": "677b0f54711d370d1c1dd0b1",
         "title": "Nota 1",
-        "color": "GREEN",
+        "color": "#fff",
         "tags": [
             "tag1",
             "tag2"
@@ -88,7 +97,7 @@ Listar todas las notas con sus datos minimos por usuario.
     {
         "id": "677f3b2b052bdf255af60359",
         "title": "Nota 2",
-        "color": "GREEN",
+        "color": "#fff",
         "tags": [],
         "createdAt": "2025-01-08T21:57:47.529",
         "updatedAt": null,
@@ -106,7 +115,7 @@ Realiza la actualización de una nota existente.
 ### 5. `PUT /api/note/logicalDelete/one/{id}`
 Elimina lógicamente una nota por su ID, la agrega a la papelera.
 
-### 5. `PUT /api/note/logicalDelete/many`
+### 6. `PUT /api/note/logicalDelete/many`
 Elimina lógicamente muchas notas por sus ID, las agrega a la papelera.
 
 ### Parámetros de consulta (Query Parameters):
@@ -115,10 +124,10 @@ Elimina lógicamente muchas notas por sus ID, las agrega a la papelera.
   - Tipo: `List<String>`
   - Ejemplo: `["id1","id2",...]`
 
-### 5. `PUT /api/note/restore/one/{id}`
+### 7. `PUT /api/note/restore/one/{id}`
 Restaura una nota de la papelera por su ID
 
-### 5. `PUT /api/note/restore/many`
+### 8. `PUT /api/note/restore/many`
 Restaura muchas notas de la papelera por sus ID
 
 ### Parámetros de consulta (Query Parameters):
@@ -127,5 +136,14 @@ Restaura muchas notas de la papelera por sus ID
   - Tipo: `List<String>`
   - Ejemplo: `["id1","id2",...]`
 
-### 5. `PUT /api/note/phisycalDelete/{id}`
+### 9. `PUT /api/note/phisycalDelete/one/{id}`
 Restaura una nota de la papelera por su ID
+
+### 10. `PUT /api/note/phisycalDelete/many`
+Restaura muchas notas de la papelera por sus ID
+
+### Parámetros de consulta (Query Parameters):
+
+- `ids` (Requerido): Lista de los ids a restaurar de la papelera.
+  - Tipo: `List<String>`
+  - Ejemplo: `["id1","id2",...]`
