@@ -6,6 +6,14 @@ Bienvenido al repositorio de la **API REST** para una **aplicación web de notas
 
 Esta API REST proporciona un conjunto de servicios RESTful que permiten interactuar con una base de datos de notas. Los usuarios pueden gestionar sus notas de manera intuitiva, almacenándolas y modificándolas, ademas de otras funcionalidades según sea necesario. 
 
+## Tecnologias Implementadas
+- Spring Boot
+- Spring Security
+- Spring WebFlux
+- MongoDB
+- Java Mail
+- JWT
+
 ## Funcionalidades
 
 - **Crear una nueva nota**: Permite a los usuarios agregar nuevas notas con un título y contenido que puede ser texto o tareas.
@@ -24,6 +32,7 @@ Esta API REST proporciona un conjunto de servicios RESTful que permiten interact
 - **Agregar muchas notas a favoritos**: Permite marcar muchas notas como favoritas.
 - **Crear un usuario**: Permite crearte una cuenta para poder hacer uso de las endpoints.
 - **Login de usuario**: Permite loguearse con una cuenta ya existente.
+- **Cambio de contraseña**: Permite al usuario existente poder cambiar su contraseña.
 
 ## Endpoints
 
