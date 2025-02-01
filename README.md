@@ -10,7 +10,7 @@ Esta API REST proporciona un conjunto de servicios RESTful que permiten interact
 - Spring Boot
 - Spring Security
 - Spring WebFlux
-- MongoDB
+- Reactive MongoDB
 - Java Mail
 - JWT
 
