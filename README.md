@@ -7,6 +7,7 @@ Bienvenido al repositorio de la **API REST** para una **aplicación web de notas
 Esta API REST proporciona un conjunto de servicios RESTful que permiten interactuar con una base de datos de notas. Los usuarios pueden gestionar sus notas de manera intuitiva, almacenándolas y modificándolas, ademas de otras funcionalidades según sea necesario. 
 
 ## Tecnologias Implementadas
+
 - Spring Boot
 - Spring Security
 - Spring WebFlux
