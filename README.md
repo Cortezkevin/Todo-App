@@ -1,4 +1,4 @@
-# Notas API REST
+# Notas API REST gaea
 
 Bienvenido al repositorio de la **API REST** para una **aplicación web de notas**. Esta API permite a los usuarios gestionar sus notas de manera eficiente y sencilla, con crear una cuenta en la aplicación podra acceder a las diferentes funcionalidades realizadas con las tecnologias descritas a continuación.
 
