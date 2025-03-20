@@ -1,16 +1,17 @@
 # Notas API REST
 
-Bienvenido al repositorio de la **API REST** para una **aplicación web de notas**. Esta API permite a los usuarios gestionar sus notas de manera eficiente y sencilla.
+Bienvenido al repositorio de la **API REST** para una **aplicación web de notas**. Esta API permite a los usuarios gestionar sus notas de manera eficiente y sencilla, con crear una cuenta en la aplicación podra acceder a las diferentes funcionalidades realizadas con las tecnologias descritas a continuación.
 
 ## Descripción
 
 Esta API REST proporciona un conjunto de servicios RESTful que permiten interactuar con una base de datos de notas. Los usuarios pueden gestionar sus notas de manera intuitiva, almacenándolas y modificándolas, ademas de otras funcionalidades según sea necesario. 
 
 ## Tecnologias Implementadas
+
 - Spring Boot
 - Spring Security
 - Spring WebFlux
-- MongoDB
+- Reactive MongoDB
 - Java Mail
 - JWT
 
