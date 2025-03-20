@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,11 @@ public class AuthService {
    private final AuthRepository authRepository;
    private final PasswordEncoder passwordEncoder;
    private final JwtProvider jwtProvider;
+
+   private Mono<User> findUserByEmail(String email){
+      return authRepository.findByEmail(email)
+         .switchIfEmpty(Mono.error(new ResourceNotFoundException("User", "Email", email)));
+   }
 
    private Mono<User> findUserById(String id) {
       return authRepository.findById(id)
@@ -93,4 +99,15 @@ public class AuthService {
          .switchIfEmpty(Mono.error(new ResourceNotFoundException("User", "Token Password", dto.tokenPassword())));
    }
 
+   public Mono<JwtDTO> validateToken(String token) {
+      String userFromToken = null;
+      if(jwtProvider.validateToken(token)){
+         userFromToken = jwtProvider.getUserNameFromToken(token);
+      }
+      return this.findUserByEmail(userFromToken)
+         .map( user -> {
+            String newToken = jwtProvider.generateToken(MainUser.build(user));
+            return new JwtDTO(newToken, UserDTO.toDTO(user));
+         });
+   }
 }

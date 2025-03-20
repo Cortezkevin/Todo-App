@@ -18,6 +18,7 @@ public class AuthRouter {
                 .GET(PATH + "/find/{id}", authHandler::findById)
                 .POST(PATH + "/login", authHandler::login)
                 .POST(PATH + "/register", authHandler::create)
+                .GET(PATH + "/validateToken/{token}", authHandler::validateToken)
                 .GET(PATH + "/sendEmail/{to}", authHandler::sendEmail)
                 .POST(PATH + "/changePassword", authHandler::changePassword)
                 .build();

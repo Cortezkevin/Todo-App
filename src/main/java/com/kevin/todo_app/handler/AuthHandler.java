@@ -116,4 +116,21 @@ public class AuthHandler {
               )
         );
     }
+
+   public Mono<ServerResponse> validateToken(ServerRequest request) {
+       String token = request.pathVariable("token");
+       return ServerResponse.ok()
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(
+             authService.validateToken(token)
+                .map(jwtDTO ->
+                   new ResponseDTO<>(
+                      ResponseConstants.SUCCESS_LOGIN,
+                      HttpStatus.OK,
+                      jwtDTO
+                   )
+                ),
+             ResponseDTO.class
+          );
+   }
 }
